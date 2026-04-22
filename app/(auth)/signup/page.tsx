@@ -1,33 +1,33 @@
 "use client";
 
-import { useState, FormEvent } from \"react\";
-import { useRouter } from \"next/navigation\";
-import Link from \"next/link\";
+import { useState, FormEvent } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 // ─── LOGO ────────────────────────────────────────────────────────────────────
 
 function CulbridgeLogo({ size = 28 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox=\"0 0 44 44\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">
+    <svg width={size} height={size} viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <linearGradient id=\"lg-signup\" x1=\"0\" y1=\"0\" x2=\"44\" y2=\"44\" gradientUnits=\"userSpaceOnUse\">
-          <stop offset=\"0%\" stopColor=\"#F7911E\" />
-          <stop offset=\"100%\" stopColor=\"#9C9DA1\" />
+        <linearGradient id="lg-signup" x1="0" y1="0" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#F7911E" />
+          <stop offset="100%" stopColor="#9C9DA1" />
         </linearGradient>
       </defs>
-      <path d=\"M6 22 C6 14, 14 10, 22 14 C30 10, 38 14, 38 22\"
-        stroke=\"url(#lg-signup)\" strokeWidth=\"3\" strokeLinecap=\"round\" fill=\"none\" />
-      <path d=\"M6 22 C6 30, 14 34, 22 30 C30 34, 38 30, 38 22\"
-        stroke=\"url(#lg-signup)\" strokeWidth=\"3\" strokeLinecap=\"round\" fill=\"none\" />
-      <circle cx=\"22\" cy=\"22\" r=\"2.8\" fill=\"#F7911E\" />
-      <line x1=\"22\" y1=\"13\" x2=\"22\" y2=\"31\" stroke=\"#F7911E\" strokeWidth=\"1.5\" strokeLinecap=\"round\" opacity=\"0.45\" />
+      <path d='M6 22 C6 14, 14 10, 22 14 C30 10, 38 14, 38 22'
+        stroke="url(#lg-signup)" strokeWidth="3" strokeLinecap="round" fill="none" />
+      <path d='M6 22 C6 30, 14 34, 22 30 C30 34, 38 30, 38 22'
+        stroke="url(#lg-signup)" strokeWidth="3" strokeLinecap="round" fill="none" />
+      <circle cx="22" cy="22" r="2.8" fill="#F7911E" />
+      <line x1="22" y1="13" x2="22" y2="31" stroke="#F7911E" strokeWidth="1.5" strokeLinecap="round" opacity="0.45" />
     </svg>
   );
 }
 
 // ─── API ─────────────────────────────────────────────────────────────────────
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? \"https://culbridge.cloud\";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "https://culbridge.cloud";
 
 async function postSignup(payload: {
   email: string;
@@ -36,12 +36,12 @@ async function postSignup(payload: {
   tin?: string;
 }) {
   const res = await fetch(`${API_BASE}/auth/signup`, {
-    method: \"POST\",
-    headers: { \"Content-Type\": \"application/json\" },
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
   const data = await res.json();
-  if (!res.ok) throw new Error(data?.message ?? \"Signup failed\");
+  if (!res.ok) throw new Error(data?.message ?? "Signup failed");
   return data as { token: string; user: { id: string; status: string } };
 }
 
@@ -49,11 +49,11 @@ async function postSignup(payload: {
 
 function validateForm(email: string, password: string, confirm: string) {
   const errs: Record<string, string> = {};
-  if (!email) errs.email = \"Email is required\";
-  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/ .test(email)) errs.email = \"Enter a valid email\";
-  if (!password) errs.password = \"Password is required\";
-  else if (password.length < 8) errs.password = \"Minimum 8 characters\";
-  if (password && confirm && password !== confirm) errs.confirm = \"Passwords do not match\";
+  if (!email) errs.email = "Email is required";
+  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/ .test(email)) errs.email = "Enter a valid email";
+  if (!password) errs.password = "Password is required";
+  else if (password.length < 8) errs.password = "Minimum 8 characters";
+  if (password && confirm && password !== confirm) errs.confirm = "Passwords do not match";
   return errs;
 }
 
@@ -62,11 +62,11 @@ function validateForm(email: string, password: string, confirm: string) {
 export default function SignupPage() {
   const router = useRouter();
 
-  const [email, setEmail] = useState(\"\");
-  const [password, setPassword] = useState(\"\");
-  const [confirm, setConfirm] = useState(\"\");
-  const [companyName, setCompanyName] = useState(\"\");
-  const [tin, setTin] = useState(\"\");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [companyName, setCompanyName] = useState("");
+  const [tin, setTin] = useState("");
   const [showPw, setShowPw] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -95,9 +95,9 @@ export default function SignupPage() {
         ...(tin ? { tin } : {}),
       });
       document.cookie = `auth-token=${token}; path=/; SameSite=Lax`;
-      router.push(\"/dashboard\");
+      router.push("/dashboard");
     } catch (err: any) {
-      setApiError(err.message ?? \"Something went wrong. Try again.\");
+      setApiError(err.message ?? "Something went wrong. Try again.");
     } finally {
       setLoading(false);
     }
@@ -113,175 +113,175 @@ export default function SignupPage() {
     return s;
   })();
 
-  const strengthLabel = [\"\", \"Weak\", \"Fair\", \"Good\", \"Strong\"][pwStrength];
-  const strengthColor = [\"\", \"#DC2626\", \"#D97706\", \"#2563EB\", \"#16A34A\"][pwStrength];
+  const strengthLabel = ["", "Weak", "Fair", "Good", "Strong"][pwStrength];
+  const strengthColor = ["", "#DC2626", "#D97706", "#2563EB", "#16A34A"][pwStrength];
 
   return (
     <>
       <style>{css}</style>
-      <div className=\"auth-root\">
+      <div className="auth-root">
 
         {/* ── Left panel ── */}
-        <aside className=\"auth-panel\">
-          <div className=\"auth-panel-inner\">
-            <div className=\"auth-panel-logo\">
+        <aside className="auth-panel">
+          <div className="auth-panel-inner">
+            <div className="auth-panel-logo">
               <CulbridgeLogo size={36} />
-              <span className=\"auth-panel-brand\">
-                <span className=\"brand-cul\">Cul</span><span className=\"brand-bridge\">bridge</span>
+              <span className="auth-panel-brand">
+                <span className="brand-cul">Cul</span><span className="brand-bridge">bridge</span>
               </span>
             </div>
 
-            <div className=\"auth-panel-body\">
-              <p className=\"auth-panel-tagline\">
+            <div className="auth-panel-body">
+              <p className="auth-panel-tagline">
                 Start shipping<br />to Europe with<br />confidence.
               </p>
-              <p className=\"auth-panel-sub\">
+              <p className="auth-panel-sub">
                 Create your account and access the EU compliance validation engine built for Nigerian agricultural exporters.
               </p>
 
-              <div className=\"auth-steps\">
+              <div className="auth-steps">
                 {[
-                  { n: \"01\", t: \"Create your account\", s: \"Email and password. Under 30 seconds.\" },
-                  { n: \"02\", t: \"Access your dashboard\", s: \"Immediate access — no KYB gate at entry.\" },
-                  { n: \"03\", t: \"Run compliance checks\", s: \"Validate shipments before they leave Nigeria.\" },
+                  { n: "01", t: "Create your account", s: "Email and password. Under 30 seconds." },
+                  { n: "02", t: "Access your dashboard", s: "Immediate access — no KYB gate at entry." },
+                  { n: "03", t: "Run compliance checks", s: "Validate shipments before they leave Nigeria." },
                 ].map(({ n, t, s }) => (
-                  <div className=\"auth-step\" key={n}>
-                    <span className=\"auth-step-num\">{n}</span>
+                  <div className="auth-step" key={n}>
+                    <span className="auth-step-num">{n}</span>
                     <div>
-                      <div className=\"auth-step-title\">{t}</div>
-                      <div className=\"auth-step-sub\">{s}</div>
+                      <div className="auth-step-title">{t}</div>
+                      <div className="auth-step-sub">{s}</div>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div className=\"auth-panel-footer\">
-              <div className=\"auth-compliance-tags\">
-                <span className=\"auth-tag\">NVWA</span>
-                <span className=\"auth-tag\">BVL</span>
-                <span className=\"auth-tag\">RASFF</span>
-                <span className=\"auth-tag\">NAQS</span>
-                <span className=\"auth-tag\">NEPC</span>
+            <div className="auth-panel-footer">
+              <div className="auth-compliance-tags">
+                <span className="auth-tag">NVWA</span>
+                <span className="auth-tag">BVL</span>
+                <span className="auth-tag">RASFF</span>
+                <span className="auth-tag">NAQS</span>
+                <span className="auth-tag">NEPC</span>
               </div>
             </div>
           </div>
         </aside>
 
         {/* ── Right: form ── */}
-        <main className=\"auth-form-area\">
-          <div className=\"auth-form-card\">
+        <main className="auth-form-area">
+          <div className="auth-form-card">
 
-            <div className=\"auth-form-header\">
-              <h1 className=\"auth-form-title\">Create account</h1>
-              <p className=\"auth-form-sub\">Get started in under a minute.</p>
+            <div className="auth-form-header">
+              <h1 className="auth-form-title">Create account</h1>
+              <p className="auth-form-sub">Get started in under a minute.</p>
             </div>
 
             {apiError && (
-              <div className=\"auth-error\" role=\"alert\">
-                <svg width=\"14\" height=\"14\" viewBox=\"0 0 14 14\" fill=\"none\">
-                  <circle cx=\"7\" cy=\"7\" r=\"6\" stroke=\"#DC2626\" strokeWidth=\"1.4\" />
-                  <path d=\"M7 4v4M7 9.5v.5\" stroke=\"#DC2626\" strokeWidth=\"1.4\" strokeLinecap=\"round\" />
+              <div className="auth-error" role="alert">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  <circle cx="7" cy="7" r="6" stroke="#DC2626" strokeWidth="1.4" />
+                  <path d="M7 4v4M7 9.5v.5" stroke="#DC2626" strokeWidth="1.4" strokeLinecap="round" />
                 </svg>
                 {apiError}
               </div>
             )}
 
-            <form className=\"auth-form\" onSubmit={handleSubmit} noValidate>
+            <form className="auth-form" onSubmit={handleSubmit} noValidate>
 
               {/* Email */}
-              <div className=\"auth-field\">
-                <label className=\"auth-label\" htmlFor=\"su-email\">
-                  Email address <span className=\"req\">*</span>
+              <div className="auth-field">
+                <label className="auth-label" htmlFor="su-email">
+                  Email address <span className="req">*</span>
                 </label>
                 <input
-                  id=\"su-email\"
-                  className={\"auth-input \" + (fieldErrors.email ? \"input-error\" : \"\")}
-                  type=\"email\"
-                  autoComplete=\"email\"
-                  placeholder=\"you@company.com\"
+                  id="su-email"
+                  className={`auth-input ${fieldErrors.email ? "input-error" : ""}`}
+                  type="email"
+                  autoComplete="email"
+                  placeholder="you@company.com"
                   value={email}
-                  onChange={e => { setEmail(e.target.value); setFieldErrors(p => ({ ...p, email: \"\" })); }}
+                  onChange={e => { setEmail(e.target.value); setFieldErrors(p => ({ ...p, email: "" })); }}
                   disabled={loading}
                 />
-                {fieldErrors.email && <span className=\"auth-field-error\">{fieldErrors.email}</span>}
+                {fieldErrors.email && <span className="auth-field-error">{fieldErrors.email}</span>}
               </div>
 
               {/* Password */}
-              <div className=\"auth-field\">
-                <label className=\"auth-label\" htmlFor=\"su-password\">
-                  Password <span className=\"req\">*</span>
+              <div className="auth-field">
+                <label className="auth-label" htmlFor="su-password">
+                  Password <span className="req">*</span>
                 </label>
-                <div className=\"auth-input-wrap\">
+                <div className="auth-input-wrap">
                   <input
-                    id=\"su-password\"
-                    className={\"auth-input \" + (fieldErrors.password ? \"input-error\" : \"\")}
-                    type={showPw ? \"text\" : \"password\"}
-                    autoComplete=\"new-password\"
-                    placeholder=\"Minimum 8 characters\"
+                    id="su-password"
+                    className={`auth-input ${fieldErrors.password ? "input-error" : ""}`}
+                    type={showPw ? "text" : "password"}
+                    autoComplete="new-password"
+                    placeholder="Minimum 8 characters"
                     value={password}
-                    onChange={e => { setPassword(e.target.value); setFieldErrors(p => ({ ...p, password: \"\" })); }}
+                    onChange={e => { setPassword(e.target.value); setFieldErrors(p => ({ ...p, password: "" })); }}
                     disabled={loading}
                   />
-                  <button type=\"button\" className=\"auth-pw-toggle\"
+                  <button type="button" className="auth-pw-toggle"
                     onClick={() => setShowPw(v => !v)} tabIndex={-1}>
                     <EyeIcon open={showPw} />
                   </button>
                 </div>
                 {password && (
-                  <div className=\"auth-pw-strength\">
-                    <div className=\"auth-pw-bars\">
+                  <div className="auth-pw-strength">
+                    <div className="auth-pw-bars">
                       {[1, 2, 3, 4].map(i => (
-                        <div key={i} className=\"auth-pw-bar\"
-                          style={{ background: i <= pwStrength ? strengthColor : \"#E2E4E9\" }} />
+                        <div key={i} className="auth-pw-bar"
+                          style={{ background: i <= pwStrength ? strengthColor : "#E2E4E9" }} />
                       ))}
                     </div>
                     {strengthLabel && (
-                      <span className=\"auth-pw-label\" style={{ color: strengthColor }}>{strengthLabel}</span>
+                      <span className="auth-pw-label" style={{ color: strengthColor }}>{strengthLabel}</span>
                     )}
                   </div>
                 )}
-                {fieldErrors.password && <span className=\"auth-field-error\">{fieldErrors.password}</span>}
+                {fieldErrors.password && <span className="auth-field-error">{fieldErrors.password}</span>}
               </div>
 
               {/* Confirm password */}
-              <div className=\"auth-field\">
-                <label className=\"auth-label\" htmlFor=\"su-confirm\">
-                  Confirm password <span className=\"req\">*</span>
+              <div className="auth-field">
+                <label className="auth-label" htmlFor="su-confirm">
+                  Confirm password <span className="req">*</span>
                 </label>
-                <div className=\"auth-input-wrap\">
+                <div className="auth-input-wrap">
                   <input
-                    id=\"su-confirm\"
-                    className={\"auth-input \" + (fieldErrors.confirm ? \"input-error\" : \"\")}
-                    type={showConfirm ? \"text\" : \"password\"}
-                    autoComplete=\"new-password\"
-                    placeholder=\"Repeat password\"
+                    id="su-confirm"
+                    className={`auth-input ${fieldErrors.confirm ? "input-error" : ""}`}
+                    type={showConfirm ? "text" : "password"}
+                    autoComplete="new-password"
+                    placeholder="Repeat password"
                     value={confirm}
-                    onChange={e => { setConfirm(e.target.value); setFieldErrors(p => ({ ...p, confirm: \"\" })); }}
+                    onChange={e => { setConfirm(e.target.value); setFieldErrors(p => ({ ...p, confirm: "" })); }}
                     disabled={loading}
                   />
-                  <button type=\"button\" className=\"auth-pw-toggle\"
+                  <button type="button" className="auth-pw-toggle"
                     onClick={() => setShowConfirm(v => !v)} tabIndex={-1}>
                     <EyeIcon open={showConfirm} />
                   </button>
                 </div>
-                {fieldErrors.confirm && <span className=\"auth-field-error\">{fieldErrors.confirm}</span>}
+                {fieldErrors.confirm && <span className="auth-field-error">{fieldErrors.confirm}</span>}
               </div>
 
               {/* Divider */}
-              <div className=\"auth-optional-label\">
+              <div className="auth-optional-label">
                 <span>Optional — you can add these later</span>
               </div>
 
               {/* Company name */}
-              <div className=\"auth-field\">
-                <label className=\"auth-label\" htmlFor=\"su-company\">Company name</label>
+              <div className="auth-field">
+                <label className="auth-label" htmlFor="su-company">Company name</label>
                 <input
-                  id=\"su-company\"
-                  className=\"auth-input\"
-                  type=\"text\"
-                  autoComplete=\"organization\"
-                  placeholder=\"e.g. Arewa Exports Ltd\"
+                  id="su-company"
+                  className="auth-input"
+                  type="text"
+                  autoComplete="organization"
+                  placeholder="e.g. Arewa Exports Ltd"
                   value={companyName}
                   onChange={e => setCompanyName(e.target.value)}
                   disabled={loading}
@@ -289,32 +289,32 @@ export default function SignupPage() {
               </div>
 
               {/* TIN */}
-              <div className=\"auth-field\">
-                <label className=\"auth-label\" htmlFor=\"su-tin\">
+              <div className="auth-field">
+                <label className="auth-label" htmlFor="su-tin">
                   TIN (Tax Identification Number)
                 </label>
                 <input
-                  id=\"su-tin\"
-                  className=\"auth-input\"
-                  type=\"text\"
-                  placeholder=\"e.g. 1234567-0001\"
+                  id="su-tin"
+                  className="auth-input"
+                  type="text"
+                  placeholder="e.g. 1234567-0001"
                   value={tin}
                   onChange={e => setTin(e.target.value)}
                   disabled={loading}
                 />
-                <span className=\"auth-hint\">Captured now, verified later. Does not block account creation.</span>
+                <span className="auth-hint">Captured now, verified later. Does not block account creation.</span>
               </div>
 
-              <button className=\"auth-btn-primary\" type=\"submit\" disabled={loading || !email || !password || !confirm}>
+              <button className="auth-btn-primary" type="submit" disabled={loading || !email || !password || !confirm}>
                 {loading
-                  ? <><span className=\"auth-spinner\" /> Creating account…</>
-                  : \"Create account →\"}
+                  ? <><span className="auth-spinner" /> Creating account…</>
+                  : "Create account →"}
               </button>
             </form>
 
-            <p className=\"auth-switch\">
-              Already have an account?{\" \"}  
-              <Link href=\"/login\" className=\"auth-link\">Sign in</Link>
+            <p className="auth-switch">
+              Already have an account?{" "}  
+              <Link href="/login" className="auth-link">Sign in</Link>
             </p>
           </div>
         </main>
@@ -328,14 +328,14 @@ export default function SignupPage() {
 
 function EyeIcon({ open }: { open: boolean }) {
   return open ? (
-    <svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\">
-      <path d=\"M2 2l12 12M6.5 6.6A2 2 0 0 0 9.4 9.5M4.2 4.3C2.9 5.2 2 6.5 2 8c0 2.5 2.7 5 6 5a7.4 7.4 0 0 0 3.8-1.2M6 3.1A7 7 0 0 1 8 3c3.3 0 6 2.5 6 5a5.5 5.5 0 0 1-1.1 2.9\"
-        stroke=\"currentColor\" strokeWidth=\"1.3\" strokeLinecap=\"round\" />
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <path d="M2 2l12 12M6.5 6.6A2 2 0 0 0 9.4 9.5M4.2 4.3C2.9 5.2 2 6.5 2 8c0 2.5 2.7 5 6 5a7.4 7.4 0 0 0 3.8-1.2M6 3.1A7 7 0 0 1 8 3c3.3 0 6 2.5 6 5a5.5 5.5 0 0 1-1.1 2.9"
+        stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
     </svg>
   ) : (
-    <svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\">
-      <path d=\"M2 8c0-2.5 2.7-5 6-5s6 2.5 6 5-2.7 5-6 5-6-2.5-6-5z\" stroke=\"currentColor\" strokeWidth=\"1.3\" />
-      <circle cx=\"8\" cy=\"8\" r=\"2\" stroke=\"currentColor\" strokeWidth=\"1.3\" />
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <path d="M2 8c0-2.5 2.7-5 6-5s6 2.5 6 5-2.7 5-6 5-6-2.5-6-5z" stroke="currentColor" strokeWidth="1.3" />
+      <circle cx="8" cy="8" r="2" stroke="currentColor" strokeWidth="1.3" />
     </svg>
   );
 }
@@ -692,4 +692,3 @@ const css = \`
     .auth-panel { display: none; }
   }
 \`;
-
