@@ -15,18 +15,21 @@ export async function POST(req: NextRequest) {
     const res = NextResponse.json({ success: response.ok, data });
     
     if (response.ok) {
-      // Proxy auth cookies from backend
+      // Set auth-token cookie from backend response
       const authToken = data.token;
       res.cookies.set('auth-token', authToken, { 
         httpOnly: true, 
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
         maxAge: 60 * 60 * 24 * 30, // 30 days
+        path: '/',
       });
     }
 
     return res;
   } catch (error) {
+    console.error('Login proxy error:', error);
     return NextResponse.json({ error: 'Login failed' }, { status: 500 });
   }
 }
+

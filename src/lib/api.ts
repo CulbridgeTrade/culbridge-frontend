@@ -10,7 +10,7 @@ export interface ShipmentData {
 export async function createShipment(data: ShipmentData): Promise<void> {
   const token = typeof window !== 'undefined' ? localStorage.getItem('culbridge_access_token') : null;
   
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/shipments`, {
+const res = await fetch(`/api/shipments`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -28,7 +28,7 @@ export async function createShipment(data: ShipmentData): Promise<void> {
 export async function createCSF(data: Omit<ShipmentData, 'exporterId'>): Promise<void> {
   const token = typeof window !== 'undefined' ? localStorage.getItem('culbridge_access_token') : null;
   
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/shipments/csf`, {
+const res = await fetch(`/api/csf`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
