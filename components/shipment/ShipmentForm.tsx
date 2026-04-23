@@ -12,8 +12,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '../ui/dialog';
-import type { ShipmentData } from '../../lib/api';
-import { createShipment, createCSF } from '../../lib/api';
+// import type { ShipmentData } from '@/lib/api';
+import { createShipment, createCSF } from '@/lib/api';
 
 const shipmentSchema = z.object({
   commodity: z.enum(['cocoa', 'sesame', 'ginger', 'cashew', 'beans']).default('cocoa'),
