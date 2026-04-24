@@ -1,7 +1,6 @@
 "use client";
 
 import { ShipmentForm } from "@/components/shipment/ShipmentForm";
-import { CSFShipmentForm } from "@/components/shipment/ShipmentForm";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
@@ -29,7 +28,7 @@ export default function NewShipmentPage() {
         </div>
         <div className="w-96 p-6 border rounded-lg">
           <h3 className="font-semibold mb-4 text-lg">New CSF Form (Recommended)</h3>
-          <CSFShipmentForm onSuccess={handleSuccess} />
+          <ShipmentForm onSuccess={handleSuccess} />
         </div>
       </div>
     </div>
