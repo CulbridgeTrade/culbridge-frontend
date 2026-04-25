@@ -1,13 +1,49 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function POST(request: Request) {
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+
+async function getToken(req: NextRequest) {
+  return req.cookies.get('auth-token')?.value || req.headers.get('authorization')?.replace('Bearer ', '');
+}
+
+export async function GET(req: NextRequest) {
   try {
-    const data = await request.json();
-    console.log('Created shipment:', data);
-    // TODO: save to DB
-    return NextResponse.json({ success: true, id: 'sim-' + Date.now() });
+    const token = await getToken(req);
+    if (!token) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    const { searchParams } = new URL(req.url);
+    const query = searchParams.toString();
+
+    const response = await fetch(`${API_BASE}/api/v1/shipments?${query}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    const data = await response.json();
+    return NextResponse.json(data, { status: response.status });
   } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: 'Failed to create shipment' }, { status: 400 });
+    return NextResponse.json({ error: 'Failed to fetch shipments' }, { status: 500 });
+  }
+}
+
+export async function POST(req: NextRequest) {
+  try {
+    const token = await getToken(req);
+    if (!token) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    const body = await req.json();
+
+    const response = await fetch(`${API_BASE}/shipments`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(body),
+    });
+
+    const data = await response.json();
+    return NextResponse.json(data, { status: response.status });
+  } catch (error) {
+    return NextResponse.json({ error: 'Failed to create shipment' }, { status: 500 });
   }
 }

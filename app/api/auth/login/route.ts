@@ -3,9 +3,8 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    
-    // Set NEXT_PUBLIC_API_URL in Vercel to production backend URL (e.g., https://api.culbridge.cloud)
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/auth/login`, {
+
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
@@ -13,16 +12,14 @@ export async function POST(req: NextRequest) {
 
     const data = await response.json();
 
-    const res = NextResponse.json({ success: response.ok, data });
-    
-    if (response.ok) {
-      // Set auth-token cookie from backend response
-      const authToken = data.token;
-      res.cookies.set('auth-token', authToken, { 
-        httpOnly: true, 
+    const res = NextResponse.json(data, { status: response.status });
+
+    if (response.ok && data.token) {
+      res.cookies.set('auth-token', data.token, {
+        httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
-        maxAge: 60 * 60 * 24 * 30, // 30 days
+        maxAge: 60 * 60 * 24 * 30,
         path: '/',
       });
     }
@@ -33,4 +30,3 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Login failed' }, { status: 500 });
   }
 }
-

@@ -6,14 +6,9 @@ export interface ShipmentData {
 }
 
 export async function createShipment(data: ShipmentData): Promise<void> {
-  const token = typeof window !== 'undefined' ? localStorage.getItem('culbridge_access_token') : null;
-  
-const res = await fetch(`/api/shipments`, {
+  const res = await fetch(`/api/shipments`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token && { 'Authorization': `Bearer ${token}` }),
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
   });
 
@@ -24,14 +19,9 @@ const res = await fetch(`/api/shipments`, {
 }
 
 export async function createCSF(data: Omit<ShipmentData, 'exporterId'>): Promise<void> {
-  const token = typeof window !== 'undefined' ? localStorage.getItem('culbridge_access_token') : null;
-  
-const res = await fetch(`/api/csf`, {
+  const res = await fetch(`/api/csf`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token && { 'Authorization': `Bearer ${token}` }),
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
   });
 
@@ -41,3 +31,15 @@ const res = await fetch(`/api/csf`, {
   }
 }
 
+export async function getShipments(filters?: Record<string, string>) {
+  const params = filters ? new URLSearchParams(filters).toString() : '';
+  const res = await fetch(`/api/shipments${params ? `?${params}` : ''}`);
+  if (!res.ok) throw new Error('Failed to load shipments');
+  return res.json();
+}
+
+export async function getShipmentSummary() {
+  const res = await fetch(`/api/shipments/summary`);
+  if (!res.ok) throw new Error('Failed to load summary');
+  return res.json();
+}
