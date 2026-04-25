@@ -1,0 +1,44 @@
+
+> culbridge-frontend@0.1.0 build
+> next build
+
+  ▲ Next.js 14.2.35
+  - Environments: .env.local
+
+   Creating an optimized production build ...
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename 'C:\Culbridge\culbridge-frontend\.next\cache\webpack\client-production\6.pack_' -> 'C:\Culbridge\culbridge-frontend\.next\cache\webpack\client-production\6.pack'
+ ✓ Compiled successfully
+   Skipping linting
+   Checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/14) ...
+   Generating static pages (3/14) 
+   Generating static pages (6/14) 
+   Generating static pages (10/14) 
+ ✓ Generating static pages (14/14)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                              Size     First Load JS
+┌ ○ /                                    336 B          87.7 kB
+├ ○ /_not-found                          873 B          88.2 kB
+├ ○ /admin                               138 B          87.5 kB
+├ ƒ /api/auth/login                      0 B                0 B
+├ ƒ /api/auth/register                   0 B                0 B
+├ ƒ /api/csf                             0 B                0 B
+├ ƒ /api/shipments                       0 B                0 B
+├ ○ /dashboard                           8.38 kB         118 kB
+├ ○ /login                               4.28 kB         100 kB
+├ ○ /shipment/new                        2.63 kB         121 kB
+└ ○ /signup                              5.24 kB         101 kB
++ First Load JS shared by all            87.3 kB
+  ├ chunks/117-0b4737bb51921f10.js       31.7 kB
+  ├ chunks/fd9d1056-9583fa19bc194043.js  53.6 kB
+  └ other shared chunks (total)          1.95 kB
+
+
+ƒ Middleware                             26.5 kB
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
