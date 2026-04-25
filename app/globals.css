@@ -24,6 +24,10 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 221.2 83.2% 53.3%;
     --radius: 0.5rem;
+    /* Brand colors - Culbridge identity */
+    --cul: 0 0% 100%;           /* CUL = WHITE */
+    --bridge: 27 89% 55%;        /* BRIDGE = #F28C28 in HSL */
+    --bridge-dark: 27 89% 45%;
   }
 
   .dark {
@@ -46,6 +50,10 @@
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 224.3 76.3% 94.1%;
+    /* Brand colors in dark mode */
+    --cul: 0 0% 100%;           /* CUL = WHITE (always white) */
+    --bridge: 27 89% 55%;        /* BRIDGE = #F28C28 */
+    --bridge-dark: 27 89% 45%;
   }
 }
 
