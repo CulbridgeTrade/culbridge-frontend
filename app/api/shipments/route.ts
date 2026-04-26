@@ -1,87 +1,73 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireAuth, requireRole, handleAuthError } from '@/lib/auth';
+import { pool } from '@/lib/db';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+export const dynamic = 'force-dynamic';
 
-async function getToken(req: NextRequest) {
-  return req.cookies.get('auth-token')?.value || req.headers.get('authorization')?.replace('Bearer ', '');
-}
-
-function generateMockShipments(count: number = 12) {
-  const commodities = ['Cocoa Beans', 'Sesame Seeds', 'Ginger', 'Cashew Nuts', 'Soybeans', 'Groundnuts'];
-  const destinations = ['Netherlands', 'Germany', 'UK', 'France', 'Belgium', 'Spain'];
-  const statuses = ['OK', 'WARNING', 'BLOCKED', 'PENDING'] as const;
-  const exporters = ['GreenField Exports Ltd', 'AgroTrade NG', 'West African Commodities', 'Nigerian Export Co', 'FarmGate Logistics'];
-
-  return Array.from({ length: count }, (_, i) => {
-    const status = statuses[Math.floor(Math.random() * statuses.length)];
-    const confidenceScore = status === 'OK' ? 0.92 : status === 'WARNING' ? 0.72 : status === 'BLOCKED' ? 0.45 : 0.0;
-    return {
-      shipmentId: `SHP-${2024001 + i}`,
-      commodity: commodities[Math.floor(Math.random() * commodities.length)],
-      destination: destinations[Math.floor(Math.random() * destinations.length)],
-      complianceStatus: status,
-      createdAt: new Date(Date.now() - Math.floor(Math.random() * 30) * 24 * 60 * 60 * 1000).toISOString(),
-      confidenceScore,
-      weight: Math.floor(Math.random() * 20000) + 5000,
-      exporter_name: exporters[Math.floor(Math.random() * exporters.length)],
-    };
-  });
-}
-
+/**
+ * GET /api/shipments
+ * EXPORTER: sees only own shipments
+ * ADMIN: sees all shipments
+ */
 export async function GET(req: NextRequest) {
   try {
-    const token = await getToken(req);
-    if (!token) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const user = requireAuth(req);
 
     const { searchParams } = new URL(req.url);
-    const query = searchParams.toString();
+    const statusFilter = searchParams.get('status');
 
-    // Try to fetch from backend first
-    try {
-      const response = await fetch(`${API_BASE}/api/v1/shipments?${query}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        return NextResponse.json(data, { status: 200 });
-      }
-    } catch {
-      // Backend not available, fall through to mock
+    // ADMIN sees all shipments
+    if (user.role === 'ADMIN') {
+      const result = await pool.query(
+        `SELECT s.*, u.email as exporter_email, u.company_name as exporter_name
+         FROM shipments s
+         LEFT JOIN users u ON s.user_id = u.id
+         ORDER BY s.created_at DESC`
+      );
+      return NextResponse.json({ shipments: result.rows }, { status: 200 });
     }
 
-    // Mock data for demo purposes
-    const mockShipments = generateMockShipments();
-    const statusFilter = searchParams.get('status');
-    const filtered = statusFilter
-      ? mockShipments.filter((s) => s.complianceStatus === statusFilter)
-      : mockShipments;
+    // EXPORTER sees only own shipments
+    const result = await pool.query(
+      `SELECT s.*, u.email as exporter_email, u.company_name as exporter_name
+       FROM shipments s
+       LEFT JOIN users u ON s.user_id = u.id
+       WHERE s.user_id = $1
+       ORDER BY s.created_at DESC`,
+      [user.userId]
+    );
 
-    return NextResponse.json({ shipments: filtered }, { status: 200 });
+    let shipments = result.rows;
+    if (statusFilter) {
+      shipments = shipments.filter((s: any) => s.compliance_status === statusFilter);
+    }
+
+    return NextResponse.json({ shipments }, { status: 200 });
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to fetch shipments' }, { status: 500 });
+    return handleAuthError(error);
   }
 }
 
+/**
+ * POST /api/shipments
+ * EXPORTER only — creates shipment for authenticated user.
+ */
 export async function POST(req: NextRequest) {
   try {
-    const token = await getToken(req);
-    if (!token) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const user = requireAuth(req);
+    requireRole(user, ['EXPORTER']);
 
     const body = await req.json();
 
-    const response = await fetch(`${API_BASE}/shipments`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(body),
-    });
+    const result = await pool.query(
+      `INSERT INTO shipments (user_id, product, destination, weight, hs_code, status)
+       VALUES ($1, $2, $3, $4, $5, 'PENDING')
+       RETURNING *`,
+      [user.userId, body.product, body.destination, body.weight, body.hs_code]
+    );
 
-    const data = await response.json();
-    return NextResponse.json(data, { status: response.status });
+    return NextResponse.json({ shipment: result.rows[0] }, { status: 201 });
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to create shipment' }, { status: 500 });
+    return handleAuthError(error);
   }
 }

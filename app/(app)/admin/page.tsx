@@ -1,3 +1,39 @@
-export default function AdminPage() {
-  return <div>Admin Dashboard - Admin only</div>;
+import { redirect } from 'next/navigation';
+import { cookies } from 'next/headers';
+import jwt from 'jsonwebtoken';
+
+interface TokenPayload {
+  userId: string;
+  email: string;
+  role: string;
+}
+
+function verifyToken(token: string): TokenPayload | null {
+  try {
+    return jwt.verify(token, process.env.JWT_SECRET!) as TokenPayload;
+  } catch {
+    return null;
+  }
+}
+
+export default async function AdminPage() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get('auth-token')?.value;
+
+  if (!token) {
+    redirect('/login');
+  }
+
+  const decoded = verifyToken(token);
+  if (!decoded || decoded.role !== 'ADMIN') {
+    redirect('/dashboard');
+  }
+
+  return (
+    <div>
+      <h1>Admin Dashboard</h1>
+      <p>Logged in as: {decoded.email}</p>
+      <p>Role: {decoded.role}</p>
+    </div>
+  );
 }
