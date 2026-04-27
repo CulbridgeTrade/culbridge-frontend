@@ -1,33 +1,12 @@
-import Database from 'better-sqlite3';
-
 // Check if we're using PostgreSQL vs SQLite
 const isPostgres = (process.env.DATABASE_URL || '').startsWith('postgresql://');
 
-let dbInstance: any = null;
-
-export function getDb() {
-  if (dbInstance) return dbInstance;
-  
-  if (isPostgres) {
-    throw new Error('Cannot use getDb() with PostgreSQL. Use pg client directly for production.');
-  }
-  
-  const Database = require('better-sqlite3');
-  const dbPath = process.env.DATABASE_URL || './culbridge.db';
-  
-  dbInstance = new Database(dbPath);
-  dbInstance.pragma('journal_mode = WAL');
-  
-  return dbInstance;
-}
-
 // PostgreSQL client for production
-let pgClient: any = null;
 let pgPool: any = null;
 
 async function getPgPool() {
   if (pgPool) return pgPool;
-  
+
   if (isPostgres) {
     const { Pool } = await import('pg');
     pgPool = new Pool({
@@ -36,7 +15,10 @@ async function getPgPool() {
     });
   } else {
     // SQLite wrapper that mimics pg Pool interface
-    const Database = require('better-sqlite3');
+    // Use dynamic import with webpackIgnore so builds do not fail
+    // when better-sqlite3 is unavailable (e.g. on Vercel)
+    const mod: any = await import(/* webpackIgnore: true */ 'better-sqlite3');
+    const Database = mod.default || mod;
     const dbPath = process.env.DATABASE_URL || './culbridge.db';
     const db = new Database(dbPath);
     pgPool = {
@@ -49,13 +31,13 @@ async function getPgPool() {
         } catch (err: any) {
           // Re-throw with code for error handling
           const error = new Error(err.message);
-          (error as any).code = err.errno || err.code || err.errno || err.message;
+          (error as any).code = err.errno || err.code || err.message;
           throw error;
         }
       }
     };
   }
-  
+
   return pgPool;
 }
 
