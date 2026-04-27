@@ -18,6 +18,10 @@ export async function hashPassword(password: string) {
   return bcrypt.hash(password, 10);
 }
 
+export function hashPasswordSync(password: string): string {
+  return bcrypt.hashSync(password, 10);
+}
+
 export async function comparePassword(password: string, hash: string) {
   return bcrypt.compare(password, hash);
 }

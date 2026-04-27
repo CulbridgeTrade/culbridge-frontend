@@ -22,7 +22,8 @@ export async function GET(req: NextRequest) {
         `SELECT s.*, u.email as exporter_email, u.company_name as exporter_name
          FROM shipments s
          LEFT JOIN users u ON s.user_id = u.id
-         ORDER BY s.created_at DESC`
+         ORDER BY s.created_at DESC`,
+        []
       );
       return NextResponse.json({ shipments: result.rows }, { status: 200 });
     }

@@ -61,6 +61,7 @@ export async function POST(req: NextRequest) {
   } catch (err: any) {
     console.error("Signup error:", err);
 
+    // PostgreSQL unique constraint error code
     if (err.code === "23505") {
       return NextResponse.json(
         { error: "User already exists" },
@@ -68,6 +69,15 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // SQLite constraint error for duplicate email
+    if (err.message?.includes("UNIQUE constraint failed") || err.message?.includes("UNIQUE constraint")) {
+      return NextResponse.json(
+        { error: "User already exists" },
+        { status: 409 }
+      );
+    }
+
+    // PostgreSQL undefined table error
     if (err.code === "42P01") {
       return NextResponse.json(
         { error: "Database not initialized — users table missing" },
