@@ -1,3 +1,4 @@
+/** @type {import('next').NextConfig} */
 const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
@@ -6,8 +7,6 @@ const nextConfig = {
     NEXT_PUBLIC_API_URL:
       process.env.NEXT_PUBLIC_API_URL || "https://culbridgetrade.onrender.com",
   },
-  serverExternalPackages: ['better-sqlite3'],
 };
 
 module.exports = nextConfig;
-
